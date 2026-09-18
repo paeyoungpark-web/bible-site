@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>주간 성경퀴즈 — 손글씨 답안지, 사진만 올리면 출석부가 채워집니다</title>
+<meta name="description" content="성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 사진으로 올리면 AI가 이름과 회차를 읽어 Google Sheets 출석부에 자동 기록합니다. 은천교회에서 매주 운영 중. 다른 교회에 무료 또는 실비로 제공합니다.">
+<meta property="og:title" content="주간 성경퀴즈 — 답안지 사진으로 끝나는 제출 관리">
+<meta property="og:description" content="손글씨 답안지를 AI가 읽어 출석부에 자동 기록. 교회에 무료 또는 실비로.">
+<meta property="og:url" content="https://bible.lupa.kr/">
+<link rel="canonical" href="https://bible.lupa.kr/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#f6f3ec; --paper:#fffdf8; --sunk:#efeae0; --line:#e3ddcf; --line-2:#d3cbb8;
+    --ink:#1c1e1a; --ink-2:#5b6056; --ink-3:#8d9187;
+    --green:#2f5d4f; --green-2:#24493e; --green-soft:#e2ece7;
+    --ochre:#a9742f; --ochre-soft:#f3e7d2; --ok:#2f8f5b; --warn:#c8842a; --bad:#c04a3a;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --sans:'Pretendard Variable','Pretendard',-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+    --maxw:1040px; --r:8px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono);font-feature-settings:"tnum"}
+  .label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+  svg.ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+  /* header */
+  .hd{height:60px;position:sticky;top:0;z-index:20;background:rgba(246,243,236,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  .hd .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .brand .mk{width:26px;height:26px;border-radius:7px;background:var(--green);display:grid;place-items:center;color:#fff}
+  .brand .mk svg{width:15px;height:15px}
+  .brand .dim{color:var(--ink-3);font-weight:500;font-size:13px}
+  .nav{display:flex;align-items:center;gap:22px;font-size:13.5px;color:var(--ink-2)}
+  .nav a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:var(--r);font-size:14px;font-weight:600;
+    border:1px solid var(--line-2);background:var(--paper);color:var(--ink);transition:background .12s,border-color .12s,transform .12s}
+  .btn:hover{background:#fff;border-color:var(--ink-3)}
+  .btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .btn.primary:hover{background:var(--green-2);border-color:var(--green-2)}
+  .btn.lg{height:46px;padding:0 20px;font-size:15px}
+  @media(max-width:700px){.nav .hide-m{display:none}}
+
+  /* hero */
+  .hero{padding:80px 0 60px}
+  .hero .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  @media(max-width:880px){.hero .grid{grid-template-columns:1fr;gap:40px}}
+  .hero h1{font-size:clamp(30px,4.8vw,48px);font-weight:800;letter-spacing:-.035em;line-height:1.15;margin-top:18px;text-wrap:balance}
+  .hero h1 em{font-style:normal;color:var(--green)}
+  .hero .lede{color:var(--ink-2);font-size:17px;margin-top:20px;max-width:50ch;text-wrap:pretty}
+  .hero .cta{display:flex;align-items:center;gap:14px;margin-top:30px;flex-wrap:wrap}
+  .hero .fine{margin-top:16px;color:var(--ink-3);font-size:13px;display:flex;gap:8px;align-items:center}
+
+  /* flow illustration */
+  .demo{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 20px 50px rgba(28,30,26,.08)}
+  .demo .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-bottom:14px;letter-spacing:.04em}
+  .demo .top b{color:var(--green);font-weight:600}
+  .photo{display:flex;gap:14px;align-items:center;background:var(--sunk);border:1px dashed var(--line-2);border-radius:8px;padding:12px 14px}
+  .photo .thumb{width:64px;height:84px;border-radius:4px;background:#fff;border:1px solid var(--line-2);position:relative;overflow:hidden;flex:none;transform:rotate(-2deg)}
+  .photo .thumb i{position:absolute;left:8px;right:8px;height:2px;background:var(--line-2);border-radius:2px}
+  .photo .thumb .hw{position:absolute;left:10px;top:14px;font-family:'Nanum Pen Script','Pretendard Variable',cursive;font-size:13px;color:#2b3a8f;transform:rotate(-1deg);white-space:nowrap}
+  .photo .txt{font-size:13px;color:var(--ink-2)}
+  .photo .txt b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+  .arrow{display:flex;align-items:center;gap:10px;padding:10px 4px;color:var(--ink-3);font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+  .arrow .ln{flex:1;height:1px;background:var(--line-2)}
+  .ai{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .ai .cell{background:var(--sunk);border-radius:6px;padding:10px 12px}
+  .ai .cell .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ink-3);text-transform:uppercase}
+  .ai .cell .v{font-weight:600;margin-top:3px;font-size:14px}
+  .ai .cell .v.ok{color:var(--ok)}
+  .sheet{border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:12.5px}
+  .sheet .r{display:grid;grid-template-columns:1.2fr repeat(6,1fr) 1fr;border-top:1px solid var(--line)}
+  .sheet .r:first-child{border-top:0;background:var(--sunk);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.04em}
+  .sheet .r > span{padding:7px 8px;border-left:1px solid var(--line);text-align:center}
+  .sheet .r > span:first-child{border-left:0;text-align:left;font-weight:600}
+  .sheet .o{color:var(--ok);font-weight:700}
+  .sheet .new{background:var(--green-soft);color:var(--green);font-weight:700}
+  .sheet .pct{font-family:var(--mono);color:var(--ink-2)}
+
+  /* band */
+  .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper)}
+  .band .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+  .band .cell{padding:24px 20px 24px 0;border-right:1px solid var(--line)}
+  .band .cell + .cell{padding-left:20px}
+  .band .cell:last-child{border-right:0}
+  .band .num{font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.01em}
+  .band .num em{font-style:normal;color:var(--green)}
+  .band .cap{color:var(--ink-2);font-size:13px;margin-top:4px}
+  @media(max-width:760px){.band .wrap{grid-template-columns:1fr 1fr}.band .cell:nth-child(2){border-right:0}
+    .band .cell:nth-child(3){padding-left:0;border-top:1px solid var(--line)}.band .cell:nth-child(4){border-top:1px solid var(--line)}}
+
+  /* sections */
+  section{padding:76px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:grid;grid-template-columns:200px 1fr;gap:32px;margin-bottom:40px}
+  @media(max-width:760px){.sec-head{grid-template-columns:1fr;gap:10px}}
+  .sec-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:800;letter-spacing:-.03em;line-height:1.22;text-wrap:balance}
+  .sec-head .lead{color:var(--ink-2);margin-top:12px;max-width:60ch;text-wrap:pretty}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:22px 22px 20px;position:relative}
+  .step .n{font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:.12em}
+  .step h3{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
+  .step p{color:var(--ink-2);font-size:14.5px;margin-top:8px;text-wrap:pretty}
+  .step .who{margin-top:14px;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;color:var(--ink-3);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+
+  /* rows */
+  .rows{border-top:1px solid var(--line)}
+  .row{display:grid;grid-template-columns:200px 1fr;gap:32px;padding:24px 0;border-bottom:1px solid var(--line)}
+  @media(max-width:760px){.row{grid-template-columns:1fr;gap:8px}}
+  .row .k{display:flex;align-items:flex-start;gap:10px;color:var(--ink-3);font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+  .row .k .idx{color:var(--green)}
+  .row h3{font-size:17.5px;font-weight:700;letter-spacing:-.015em}
+  .row p{color:var(--ink-2);margin-top:6px;max-width:66ch;text-wrap:pretty}
+
+  /* case */
+  .case{background:var(--paper)}
+  .case .box{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+  @media(max-width:860px){.case .box{grid-template-columns:1fr}}
+  .case blockquote{font-size:clamp(19px,2.4vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1.45;text-wrap:balance}
+  .case blockquote em{font-style:normal;color:var(--green)}
+  .case .by{margin-top:16px;color:var(--ink-3);font-size:13.5px}
+  .facts{list-style:none;border-top:1px solid var(--line)}
+  .facts li{display:grid;grid-template-columns:140px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .facts li span:first-child{color:var(--ink-3);font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding-top:3px}
+
+  /* adopt */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px}
+  .card h3{font-size:16px;font-weight:700;letter-spacing:-.015em;display:flex;align-items:center;gap:8px}
+  .card ul{list-style:none;margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .card li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink-2)}
+  .card li svg{margin-top:4px;color:var(--green)}
+
+  /* pricing */
+  .price{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.price{grid-template-columns:1fr}}
+  .plan{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:26px;display:flex;flex-direction:column}
+  .plan.hi{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .plan .nm{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--green);text-transform:uppercase}
+  .plan .amt{font-size:34px;font-weight:800;letter-spacing:-.03em;margin-top:8px;line-height:1.1}
+  .plan .amt small{font-size:14px;font-weight:500;color:var(--ink-3);letter-spacing:0;margin-left:6px}
+  .plan .for{color:var(--ink-2);font-size:14px;margin-top:6px}
+  .plan ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .plan li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink-2)}
+  .plan li svg{margin-top:4px;color:var(--green)}
+  .plan .btn{margin-top:22px;justify-content:center}
+  .fine{color:var(--ink-3);font-size:13px;margin-top:16px}
+
+  /* faq */
+  .faq{border-top:1px solid var(--line)}
+  .faq details{border-bottom:1px solid var(--line)}
+  .faq summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:600;font-size:16px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary svg{color:var(--ink-3);transition:transform .15s}
+  .faq details[open] summary svg{transform:rotate(45deg)}
+  .faq .a{color:var(--ink-2);padding:0 0 20px;max-width:70ch;text-wrap:pretty}
+
+  /* final cta */
+  .final{border-bottom:0}
+  .final .box{background:var(--green);color:#fff;border-radius:16px;padding:44px;display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:center}
+  @media(max-width:860px){.final .box{grid-template-columns:1fr;padding:32px}}
+  .final h2{font-size:clamp(24px,3.2vw,32px);font-weight:800;letter-spacing:-.03em;line-height:1.22}
+  .final p{margin-top:12px;color:rgba(255,255,255,.78);text-wrap:pretty}
+  .final .btn{background:#fff;border-color:#fff;color:var(--green)}
+  .final .btn:hover{background:#f1f1ec}
+  .final .side{font-family:var(--mono);font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.9}
+  .final .side b{color:#fff;font-weight:600}
+
+  footer{padding:36px 0 60px;color:var(--ink-3);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+  footer .links{display:flex;gap:16px;flex-wrap:wrap}
+  footer a:hover{color:var(--ink)}
+</style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="wrap">
+    <a class="brand" href="/">
+      <span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 0-3 3z"/><path d="M4 4v16"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <span>주간 성경퀴즈</span><span class="dim">· 답안지 제출 관리</span>
+    </a>
+    <nav class="nav">
+      <a class="hide-m" href="#how">어떻게</a>
+      <a class="hide-m" href="#features">기능</a>
+      <a class="hide-m" href="#case">운영 사례</a>
+      <a class="hide-m" href="#pricing">비용</a>
+      <a class="hide-m" href="#faq">FAQ</a>
+      <a class="btn primary" href="#contact">도입 문의</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" style="border-bottom:0">
+  <div class="wrap grid">
+    <div>
+      <div class="label">은천교회에서 매주 쓰는 도구 · 다른 교회에 무료 또는 실비로</div>
+      <h1>손글씨 답안지,<br><em>사진만 올리면</em> 출석부가 채워집니다.</h1>
+      <p class="lede">성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 스마트폰으로 찍어 올리면, AI가 이름과 회차를 읽어 Google Sheets 출석부에 바로 기록합니다. 못 읽은 것만 관리자가 한 번 확정하면, 다음부터는 알아서 인식합니다.</p>
+      <div class="cta">
+        <a class="btn primary lg" href="#contact">우리 교회에 도입하기
+          <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn lg" href="#how">어떻게 되는지 보기</a>
+      </div>
+      <div class="fine"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>데이터는 교회 소유의 Google Sheets·Drive에만 저장됩니다.</div>
+    </div>
+
+    <div class="demo" aria-label="처리 흐름 예시">
+      <div class="top"><span><b>SUBMISSION</b> · 2026-09-13 주일</span><span>WEEK 32</span></div>
+      <div class="photo">
+        <div class="thumb"><span class="hw">김은혜 · 32회</span><i style="top:36px"></i><i style="top:46px"></i><i style="top:56px;width:60%"></i><i style="top:66px"></i></div>
+        <div class="txt"><b>IMG_4127.jpg</b>답안지 사진 1장 · 스마트폰 촬영 · Drive 폴더 업로드</div>
+      </div>
+      <div class="arrow"><span>AI 판독</span><span class="ln"></span><span>명단 대조</span></div>
+      <div class="ai">
+        <div class="cell"><div class="k">이름</div><div class="v">김은혜</div></div>
+        <div class="cell"><div class="k">회차</div><div class="v mono">32</div></div>
+        <div class="cell"><div class="k">매칭</div><div class="v ok mono">100%</div></div>
+      </div>
+      <div class="arrow"><span>출석부 기록</span><span class="ln"></span><span>GOOGLE SHEETS</span></div>
+      <div class="sheet">
+        <div class="r"><span>이름</span><span>28</span><span>29</span><span>30</span><span>31</span><span>32</span><span>33</span><span>제출률</span></div>
+        <div class="r"><span>김은혜</span><span class="o">O</span><span class="o">O</span><span class="o">O</span><span class="o">O</span><span class="new">O</span><span></span><span class="pct">94%</span></div>
+        <div class="r"><span>박성민</span><span class="o">O</span><span></span><span class="o">O</span><span class="o">O</span><span class="o">O</span><span></span><span class="pct">81%</span></div>
+        <div class="r"><span>이정숙</span><span class="o">O</span><span class="o">O</span><span class="o">O</span><span></span><span></span><span></span><span class="pct">72%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="band">
+  <div class="wrap">
+    <div class="cell"><div class="num"><em>170</em>명</div><div class="cap">은천교회 매주 제출 인원</div></div>
+    <div class="cell"><div class="num"><em>52</em>주</div><div class="cap">연간 전 회차 이력 관리</div></div>
+    <div class="cell"><div class="num">사진 <em>1</em>장 = 기록 <em>1</em>건</div><div class="cap">여러 회차 한꺼번에 제출도 처리</div></div>
+    <div class="cell"><div class="num"><em>0</em>번</div><div class="cap">관리자가 출석부에 손으로 적는 횟수</div></div>
+  </div>
+</div>
+
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">01 · 어떻게</div>
+      <div>
+        <h2>관리자가 하는 일은 사진을 올리는 것뿐입니다.</h2>
+        <p class="lead">수기 확인 → 출석부 기입 → 집계로 이어지던 매주의 반복 작업을 세 단계로 줄였습니다. 스마트폰과 Google 계정만 있으면 됩니다.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">STEP 1</div><h3>답안지를 찍어 올린다</h3><p>제출된 답안지를 스마트폰으로 촬영해 교회 Google Drive 폴더에 넣거나, 관리 화면에서 여러 장을 한꺼번에 업로드합니다.</p><span class="who">관리자 · 1~2분</span></div>
+      <div class="step"><div class="n">STEP 2</div><h3>AI가 이름과 회차를 읽는다</h3><p>손글씨 이름과 회차 숫자를 인식하고 교인 명단과 대조합니다. 확신이 낮은 건 자동 기록하지 않고 "확인 필요"로 남깁니다.</p><span class="who">자동 · 장당 수 초</span></div>
+      <div class="step"><div class="n">STEP 3</div><h3>출석부에 O가 찍힌다</h3><p>교회 Google Sheets 출석부의 해당 주차 칸에 바로 기록됩니다. 현황판에서 주차별 제출자·미제출자와 제출률을 봅니다.</p><span class="who">자동 · 즉시</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">02 · 기능</div>
+      <div>
+        <h2>매주 실제로 쓰면서 다듬은 것들.</h2>
+        <p class="lead">2026년 5월부터 은천교회에서 매주 운영하며 생긴 문제를 하나씩 고쳐 온 결과입니다.</p>
+      </div>
+    </div>
+    <div class="rows">
+      <div class="row"><div class="k"><span class="idx">01</span>일괄 분석</div><div><h3>수십 장을 한 번에, 중간에 멈췄다 이어서</h3><p>사진을 한꺼번에 올리면 순서대로 처리하며 진행률을 보여 줍니다. 일시정지·재개가 되고, 한 장 처리될 때마다 즉시 시트에 기록되므로 중간에 끊겨도 앞선 기록은 남습니다.</p></div></div>
+      <div class="row"><div class="k"><span class="idx">02</span>제출 현황판</div><div><h3>1~52주차를 한 화면에, 제출률은 색으로</h3><p>주차를 누르면 그 주의 제출자·미제출자 목록이 나옵니다. 성도별 제출 횟수와 비율을 90% · 70% · 50% 기준 색으로 구분하고, 엑셀로 내려받을 수 있습니다.</p></div></div>
+      <div class="row"><div class="k"><span class="idx">03</span>AI 이름 학습</div><div><h3>한 번 고쳐 주면 다음부터 알아서</h3><p>"황지용"으로 잘못 읽은 걸 관리자가 "황지영"으로 확정하면 그 교정이 저장되어 다음 분석부터 자동 적용됩니다. 쓸수록 손이 덜 갑니다.</p></div></div>
+      <div class="row"><div class="k"><span class="idx">04</span>명단 관리</div><div><h3>교인 명단은 시트에서 그대로</h3><p>Google Sheets의 이름·직분을 가져오고, 개별 추가·삭제, 전 회차 데이터 일괄 반영(마스터 엑셀 업로드)을 지원합니다. 명단에 없는 이름은 오염 방지를 위해 기록하지 않고 알려 줍니다.</p></div></div>
+      <div class="row"><div class="k"><span class="idx">05</span>데이터 소유</div><div><h3>원본은 교회의 Google Sheets 하나</h3><p>출석부의 유일한 원본은 교회 계정의 스프레드시트입니다. 사진은 교회 Drive에, 처리 로그는 시트의 별도 탭에 남습니다. 서비스를 그만두어도 데이터는 그대로 교회에 남습니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="case" class="case">
+  <div class="wrap box">
+    <div>
+      <div class="label">03 · 운영 사례</div>
+      <blockquote style="margin-top:18px">성도 수가 170명쯤 되니 수기 확인이 한계였습니다. 지금은 <em>주일에 사진 올리는 것으로 그 주 출석 정리가 끝납니다.</em></blockquote>
+      <div class="by">대한예수교장로회 은천교회 · 주간성경공부 관리</div>
+    </div>
+    <ul class="facts">
+      <li><span>교회</span><span>대구 은천교회</span></li>
+      <li><span>규모</span><span>매주 약 170명 제출 · 연 52회차</span></li>
+      <li><span>운영</span><span>2026년 5월부터 매주 · 관리자 1명</span></li>
+      <li><span>기록</span><span>Google Sheets 출석부 (교회 계정 소유)</span></li>
+      <li><span>인식</span><span>손글씨 이름 + 회차 숫자 · 교정 학습 누적</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="adopt">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">04 · 도입</div>
+      <div>
+        <h2>교회가 준비할 것은 세 가지, 나머지는 저희가 합니다.</h2>
+        <p class="lead">답안지 양식이 달라도 이름과 회차만 적혀 있으면 됩니다. 세팅은 보통 하루 안에 끝납니다.</p>
+      </div>
+    </div>
+    <div class="two">
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h18v13H3zM3 7l3-4h12l3 4"/></svg>교회가 준비할 것</h3>
+        <ul>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>교회 Google 계정 (스프레드시트·드라이브용)</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>관리자 1명과 스마트폰</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>교인 명단 (이름·직분) 엑셀 또는 시트</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3><svg class="ic" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/><path d="M9 13h6M9 17h6"/></svg>저희가 하는 것</h3>
+        <ul>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>출석부 시트 템플릿·명단 세팅, AI 연결</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>교회 전용 관리 주소 발급 (예: ○○-bible.lupa.kr)</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>관리자 사용법 안내 (30분) 와 첫 달 운영 지원</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">05 · 비용</div>
+      <div>
+        <h2>도입비 0원. 운영은 무료 또는 실비.</h2>
+        <p class="lead">교회 행정을 돕는 도구로 만들었습니다. 돈을 벌려는 서비스가 아니라, AI 인식과 서버에 실제로 드는 비용만 나누어 부담하는 방식입니다.</p>
+      </div>
+    </div>
+    <div class="price">
+      <div class="plan">
+        <div class="nm">무료</div>
+        <div class="amt">0원<small>/ 월</small></div>
+        <div class="for">작은 교회 · 먼저 써 보고 싶은 교회</div>
+        <ul>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>모든 기능 동일</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>세팅·사용법 안내 포함</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>공용 서버에서 함께 운영</span></li>
+        </ul>
+        <a class="btn" href="#contact">무료로 시작하기</a>
+      </div>
+      <div class="plan hi">
+        <div class="nm">실비</div>
+        <div class="amt">실비<small>AI 인식 · 서버 비용만</small></div>
+        <div class="for">제출 인원이 많거나 별도 운영이 필요한 교회</div>
+        <ul>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>교회 전용 인스턴스·주소</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>답안지 양식·시트 구조 맞춤</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>금액은 규모 보고 함께 정합니다</span></li>
+        </ul>
+        <a class="btn primary" href="#contact">상담 요청</a>
+      </div>
+    </div>
+    <p class="fine">두 경우 모두 데이터는 교회 Google 계정에 저장되며, 언제든 중단해도 시트는 그대로 남습니다.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="label">06 · 자주 묻는 질문</div>
+      <div><h2>궁금한 것들.</h2></div>
+    </div>
+    <div class="faq">
+      <details><summary>답안 내용도 채점하나요?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">지금은 <b>누가 몇 회차를 제출했는지</b>를 읽어 출석부에 기록하고 집계하는 데 집중합니다. 답안 정오 채점은 교회들의 요청을 보고 다음 단계로 검토하려고 합니다. 필요하시면 문의 때 말씀해 주세요.</div></details>
+      <details><summary>손글씨를 얼마나 잘 읽나요?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">대부분 자동으로 처리되고, 확신이 낮은 건 기록하지 않고 "확인 필요"로 남깁니다. 관리자가 한 번 확정하면 그 교정이 학습되어 다음부터 같은 손글씨는 자동으로 맞춥니다. 잘못 읽은 이름이 출석부를 오염시키지 않도록 명단에 없는 이름은 기록하지 않습니다.</div></details>
+      <details><summary>데이터는 어디에 저장되나요?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">출석부 원본은 교회 계정의 Google Sheets, 사진은 교회 Google Drive에 있습니다. 저희 서버는 사진을 읽고 시트에 기록하는 역할만 하며, 별도 데이터베이스에 성도 정보를 쌓지 않습니다.</div></details>
+      <details><summary>카카오톡으로 받은 사진도 되나요?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">네. 사진 파일이면 출처는 상관없습니다. Drive 폴더에 넣거나 관리 화면에서 직접 올리면 됩니다. 한 사진에 여러 회차가 적혀 있어도 처리합니다.</div></details>
+      <details><summary>우리 교회 답안지 양식이 다른데요.<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">이름과 회차(또는 날짜)가 적혀 있으면 됩니다. 양식이 많이 다르면 도입 때 샘플 몇 장으로 인식을 맞춰 드립니다.</div></details>
+      <details><summary>관리자가 컴퓨터를 잘 못 다뤄도 되나요?<svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></summary><div class="a">사진을 올리고, 화면에 뜬 "확인 필요"를 눌러 이름을 고르는 것이 전부입니다. 30분 안내로 충분했습니다.</div></details>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="final">
+  <div class="wrap">
+    <div class="box">
+      <div>
+        <h2>다음 주일부터 손으로 적지 않아도 됩니다.</h2>
+        <p>교회 이름, 대략의 제출 인원, 지금 쓰는 답안지 사진 한 장을 보내 주시면 도입 가능 여부와 세팅 일정을 답장드립니다.</p>
+        <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
+          <a class="btn lg" href="mailto:paeyoung.park@gmail.com?subject=%5B%EC%A3%BC%EA%B0%84%20%EC%84%B1%EA%B2%BD%ED%80%B4%EC%A6%88%5D%20%EB%8F%84%EC%9E%85%20%EB%AC%B8%EC%9D%98&body=%EA%B5%90%ED%9A%8C%20%EC%9D%B4%EB%A6%84%3A%0A%EB%8C%80%EB%9E%B5%EC%9D%98%20%EC%A0%9C%EC%B6%9C%20%EC%9D%B8%EC%9B%90%3A%0A%EB%8B%B4%EB%8B%B9%EC%9E%90%20%EC%97%B0%EB%9D%BD%EC%B2%98%3A%0A(%EB%8B%B5%EC%95%88%EC%A7%80%20%EC%82%AC%EC%A7%84%201%EC%9E%A5%20%EC%B2%A8%EB%B6%80)">이메일로 문의하기
+            <svg class="ic" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg></a>
+        </div>
+      </div>
+      <div class="side">
+        <b>paeyoung.park@gmail.com</b><br>
+        만든 사람 · 박배영 (은천교회)<br>
+        운영 · Lupe / (주)로뎀시스템<br>
+        보통 1~2일 안에 답장
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 주간 성경퀴즈 · Paeyoung Park</div>
+    <div class="links">
+      <a href="https://euncheon-bible.lupa.kr">은천교회 관리자 로그인</a>
+      <a href="https://apps.lupa.kr">apps.lupa.kr</a>
+      <a href="https://lupa.kr">lupa.kr</a>
+      <a href="mailto:paeyoung.park@gmail.com">문의</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
