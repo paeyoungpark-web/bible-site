@@ -178,6 +178,16 @@
   .final .side{font-family:var(--mono);font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.9}
   .final .side b{color:#fff;font-weight:600}
 
+  /* Lupa 교회 도구 띠 */
+  .family{border-top:1px solid var(--line);background:var(--paper);padding:30px 0}
+  .family .in{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center}
+  @media(max-width:720px){.family .in{grid-template-columns:1fr}}
+  .family .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--green)}
+  .family .t{font-size:15.5px;font-weight:700;margin-top:8px;letter-spacing:-.015em}
+  .family p{color:var(--ink-2);font-size:14px;margin-top:6px;max-width:62ch;text-wrap:pretty}
+  .family .sibs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .family .sibs a{font-size:13px;color:var(--ink-2);border:1px solid var(--line);border-radius:5px;padding:5px 10px;background:var(--bg)}
+  .family .sibs a:hover{color:var(--ink);border-color:var(--line-2)}
   footer{padding:36px 0 60px;color:var(--ink-3);font-size:13px}
   footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
   footer .links{display:flex;gap:16px;flex-wrap:wrap}
@@ -407,12 +417,28 @@
   </div>
 </section>
 
+<section class="family">
+  <div class="wrap in">
+    <div>
+      <div class="k">Lupa 교회 도구</div>
+      <div class="t">작은 하나를 찾아내기까지 — 한 장의 답안지에서 한 사람의 이름을</div>
+      <p>Lupa(루파)는 돋보기입니다. 작은 것을 크게 보이게 하고, 흩어진 빛을 한 점에 모읍니다. "어떤 여자가 열 드라크마가 있는데 하나를 잃으면 등불을 켜고 집을 쓸며 찾아내기까지 부지런히 찾지 아니하겠느냐"(눅 15:8). 이 도구는 그 시선을 출석부에 옮긴 것입니다.</p>
+      <div class="sibs">
+        <a href="https://henotes.lupa.kr">헤노테스 — 한 트랙에서 한 목소리를</a>
+        <a href="https://www.youtube.com/@revival_of_rotem">로뎀아래 — 한 곡에서 한 사람의 쉼을</a>
+      </div>
+    </div>
+    <a class="btn" href="https://apps.lupa.kr/church/">교회를 위한 Lupa
+      <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div>© 2026 주간 성경퀴즈 · Paeyoung Park</div>
     <div class="links">
       <a href="https://euncheon-bible.lupa.kr">은천교회 관리자 로그인</a>
-      <a href="https://apps.lupa.kr">apps.lupa.kr</a>
+      <a href="https://apps.lupa.kr/church/">교회를 위한 Lupa</a>
       <a href="https://lupa.kr">lupa.kr</a>
       <a href="mailto:paeyoung.park@gmail.com">문의</a>
     </div>
