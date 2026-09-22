@@ -1,0 +1,12 @@
+# 주간 성경퀴즈 — 손글씨 답안지 AI 인식·출석부 자동 기록
+
+> 성도가 제출한 주간 성경퀴즈 답안지를 사진으로 올리면 AI(Gemini)가 이름과 회차를 읽어 Google Sheets 출석부에 자동 기록합니다.
+
+## 핵심
+- 운영: 대한예수교장로회 은천교회, 2026년 5월부터 매주 약 170명
+- 기능: 일괄 분석, 1–52주차 현황판, AI 이름 학습, 명단 관리, 데이터는 교회 소유 Google Sheets
+- 가격: 무료 또는 실비 (다른 교회 도입 가능)
+- 만든 사람: 박배영 (Paeyoung Park), (주)로뎀시스템
+- 소개: https://bible.lupa.kr
+- Lupa 교회 도구: https://apps.lupa.kr/church/
+- 문의: paeyoung.park@gmail.com
