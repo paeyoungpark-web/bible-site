@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>주간 성경퀴즈 — 손글씨 답안지, 사진만 올리면 출석부가 채워집니다</title>
-<meta name="description" content="성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 사진으로 올리면 AI가 이름과 회차를 읽어 Google Sheets 출석부에 자동 기록합니다. 은천교회에서 매주 운영 중. 다른 교회에 무료 또는 실비로 제공합니다.">
+<meta name="description" content="성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 사진으로 올리면 AI가 이름과 회차를 읽어 Google Sheets 출석부에 자동 기록합니다. 은천교회에서 매주 운영 중. 교회에 무료로 구축해 드립니다 (대형 교회는 소정의 교육비만).">
 <meta property="og:title" content="주간 성경퀴즈 — 답안지 사진으로 끝나는 제출 관리">
-<meta property="og:description" content="손글씨 답안지를 AI가 읽어 출석부에 자동 기록. 교회에 무료 또는 실비로.">
+<meta property="og:description" content="손글씨 답안지를 AI가 읽어 출석부에 자동 기록. 교회에 무료로 구축.">
 <meta property="og:url" content="https://bible.lupa.kr/">
 <link rel="canonical" href="https://bible.lupa.kr/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -193,7 +193,7 @@
   footer .links{display:flex;gap:16px;flex-wrap:wrap}
   footer a:hover{color:var(--ink)}
 </style>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "주간 성경퀴즈", "applicationCategory": "EducationApplication", "operatingSystem": "Web", "url": "https://bible.lupa.kr", "description": "손글씨 답안지 사진을 AI가 읽어 이름·회차를 인식하고 교회 Google Sheets 출석부에 자동 기록. 은천교회에서 매주 운영 중, 다른 교회에 무료 또는 실비로 제공.", "author": {"@type": "Person", "name": "박배영", "url": "https://apps.lupa.kr"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW", "description": "무료 또는 실비"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "주간 성경퀴즈", "applicationCategory": "EducationApplication", "operatingSystem": "Web", "url": "https://bible.lupa.kr", "description": "손글씨 답안지 사진을 AI가 읽어 이름·회차를 인식하고 교회 Google Sheets 출석부에 자동 기록. 은천교회에서 매주 운영 중, 교회에 무료로 구축 (대형 교회는 소정의 교육비만).", "author": {"@type": "Person", "name": "박배영", "url": "https://apps.lupa.kr"}, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW", "description": "무료 구축 (대형 교회는 소정의 교육비)"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "답안 내용도 채점하나요?", "acceptedAnswer": {"@type": "Answer", "text": "지금은 누가 몇 회차를 제출했는지를 읽어 출석부에 기록하고 집계하는 데 집중합니다. 답안 정오 채점은 요청을 보고 검토 예정입니다."}}, {"@type": "Question", "name": "손글씨를 얼마나 잘 읽나요?", "acceptedAnswer": {"@type": "Answer", "text": "대부분 자동 처리되고, 확신이 낮은 건 기록하지 않고 확인 필요로 남깁니다. 관리자가 한 번 확정하면 학습되어 다음부터 자동으로 맞춥니다."}}, {"@type": "Question", "name": "데이터는 어디에 저장되나요?", "acceptedAnswer": {"@type": "Answer", "text": "출석부 원본은 교회 계정의 Google Sheets, 사진은 교회 Google Drive에 있습니다. 서비스를 중단해도 데이터는 교회에 남습니다."}}, {"@type": "Question", "name": "카카오톡으로 받은 사진도 되나요?", "acceptedAnswer": {"@type": "Answer", "text": "네. 사진 파일이면 출처는 상관없습니다. Drive 폴더에 넣거나 관리 화면에서 직접 올리면 됩니다."}}]}</script>
 </head>
 <body>
@@ -218,14 +218,15 @@
 <section class="hero" style="border-bottom:0">
   <div class="wrap grid">
     <div>
-      <div class="label">은천교회에서 매주 쓰는 도구 · 다른 교회에 무료 또는 실비로</div>
+      <div class="label">은천교회에서 매주 쓰는 도구 · 교회에 무료로 구축</div>
       <h1>손글씨 답안지,<br><em>사진만 올리면</em> 출석부가 채워집니다.</h1>
-      <p class="lede">성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 스마트폰으로 찍어 올리면, AI가 이름과 회차를 읽어 Google Sheets 출석부에 바로 기록합니다. 못 읽은 것만 관리자가 한 번 확정하면, 다음부터는 알아서 인식합니다.</p>
+      <p class="lede"><strong>교회에는 무료로 구축해 드립니다.</strong> 선교와 봉사의 마음으로 합니다. 성도가 제출한 주간 성경퀴즈(성경공부) 답안지를 스마트폰으로 찍어 올리면, AI가 이름과 회차를 읽어 Google Sheets 출석부에 바로 기록합니다. 못 읽은 것만 관리자가 한 번 확정하면, 다음부터는 알아서 인식합니다.</p>
       <div class="cta">
-        <a class="btn primary lg" href="#contact">우리 교회에 도입하기
+        <a class="btn primary lg" href="#contact">우리 교회에 무료로 도입하기
           <svg class="ic" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="btn lg" href="#how">어떻게 되는지 보기</a>
       </div>
+      <p class="help" style="margin-top:22px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:13.5px;color:var(--dim)">미자립교회와 개척교회의 영상·음향·유튜브 방송에 어려움이 있으면 무료로 도움 드립니다. <a href="mailto:paeyoung.park@gmail.com?subject=%5B%EA%B5%90%ED%9A%8C%20%EC%98%81%EC%83%81%C2%B7%EC%9D%8C%ED%96%A5%C2%B7%EC%9C%A0%ED%8A%9C%EB%B8%8C%5D%20%EB%AC%B8%EC%9D%98" style="color:var(--text);border-bottom:1px solid var(--border)">문의 →</a></p>
       <div class="fine"><svg class="ic" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>데이터는 교회 소유의 Google Sheets·Drive에만 저장됩니다.</div>
     </div>
 
@@ -349,15 +350,15 @@
     <div class="sec-head">
       <div class="label">05 · 비용</div>
       <div>
-        <h2>도입비 0원. 운영은 무료 또는 실비.</h2>
-        <p class="lead">교회 행정을 돕는 도구로 만들었습니다. 돈을 벌려는 서비스가 아니라, AI 인식과 서버에 실제로 드는 비용만 나누어 부담하는 방식입니다.</p>
+        <h2>교회에 무료로 구축합니다.</h2>
+        <p class="lead">선교와 봉사의 마음으로 만든 도구입니다. 작은 교회에는 구축 비용이 없습니다. 대형 교회는 도입 교육에 드는 소정의 교육비만 받습니다.</p>
       </div>
     </div>
     <div class="price">
       <div class="plan">
         <div class="nm">무료</div>
         <div class="amt">0원<small>/ 월</small></div>
-        <div class="for">작은 교회 · 먼저 써 보고 싶은 교회</div>
+        <div class="for">작은 교회 · 미자립교회 · 개척교회</div>
         <ul>
           <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>모든 기능 동일</span></li>
           <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>세팅·사용법 안내 포함</span></li>
@@ -366,13 +367,13 @@
         <a class="btn" href="#contact">무료로 시작하기</a>
       </div>
       <div class="plan hi">
-        <div class="nm">실비</div>
-        <div class="amt">실비<small>AI 인식 · 서버 비용만</small></div>
+        <div class="nm">대형 교회</div>
+        <div class="amt">교육비<small>소정의 도입 교육비만</small></div>
         <div class="for">제출 인원이 많거나 별도 운영이 필요한 교회</div>
         <ul>
           <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>교회 전용 인스턴스·주소</span></li>
           <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>답안지 양식·시트 구조 맞춤</span></li>
-          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>금액은 규모 보고 함께 정합니다</span></li>
+          <li><svg class="ic" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></svg><span>구축 비용 없음 · 교육비는 규모 보고 함께 정합니다</span></li>
         </ul>
         <a class="btn primary" href="#contact">상담 요청</a>
       </div>
